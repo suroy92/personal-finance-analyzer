@@ -1,0 +1,4 @@
+pandas
+rich
+matplotlib
+scikit-learn

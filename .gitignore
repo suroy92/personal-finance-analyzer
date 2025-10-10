@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database file
+*.db
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# Mac OS
+.DS_Store
+
+# Logs
+*.log
+
+# Python environment
+env/
+venv/
+
+# custom file
+personal_finance_analyzer.gui.py
