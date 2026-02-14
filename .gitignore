@@ -22,6 +22,13 @@ __pycache__/
 # Python environment
 env/
 venv/
+.venv/
 
-# custom file
+# ML saved models
+saved_models/
+
+# Backups
+backups/
+
+# Deprecated files
 personal_finance_analyzer.gui.py

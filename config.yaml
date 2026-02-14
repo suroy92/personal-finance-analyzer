@@ -1,0 +1,60 @@
+database:
+  path: "personal_finance_analyzer.db"
+
+currency:
+  symbol: "\u20B9"
+  code: "INR"
+  locale: "en_IN"
+
+ml:
+  confidence_threshold: 0.7
+  retrain_on_startup: true
+  model_save_path: "saved_models/"
+
+logging:
+  level: "INFO"
+  file: "app.log"
+
+budgets:
+  default_rule: "50/30/20"  # needs/wants/savings
+
+festivals:
+  alert_days_before: 21  # notify 3 weeks before
+  default_festivals:
+    - name: "Diwali"
+      month: 10
+      day: 20
+      duration_days: 5
+    - name: "Christmas"
+      month: 12
+      day: 25
+      duration_days: 3
+    - name: "Holi"
+      month: 3
+      day: 14
+      duration_days: 2
+    - name: "Eid"
+      month: 3
+      day: 30
+      duration_days: 3
+    - name: "Durga Puja"
+      month: 10
+      day: 10
+      duration_days: 5
+    - name: "New Year"
+      month: 12
+      day: 31
+      duration_days: 2
+    - name: "Raksha Bandhan"
+      month: 8
+      day: 19
+      duration_days: 1
+    - name: "Ganesh Chaturthi"
+      month: 9
+      day: 7
+      duration_days: 3
+
+server:
+  host: "127.0.0.1"
+  port: 8050
+  debug: true
