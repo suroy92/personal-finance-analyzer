@@ -4,6 +4,7 @@ from dash import Input, Output, State, html
 import dash_bootstrap_components as dbc
 
 from ui.app import app
+from ui.theme_utils import get_colors, themed_layout
 from services.budget_service import set_budget, get_budget_vs_actual, apply_50_30_20_rule, get_all_budgets
 from services.suggestion_service import get_spending_ratio_analysis
 from services.transaction_service import get_summary
@@ -35,8 +36,9 @@ def handle_set_budget(n_clicks, category, amount):
     Input("set-budget-btn", "n_clicks"),
     Input("budget-month-select", "value"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_budget_chart(_, month, pathname):
+def update_budget_chart(_, month, pathname, theme):
     if pathname != "/budgets":
         return go.Figure(), ""
 
@@ -47,17 +49,18 @@ def update_budget_chart(_, month, pathname):
         fig = go.Figure().add_annotation(text="No budgets set yet", showarrow=False)
         return fig, html.P("Set budgets above to see comparison.", className="text-muted")
 
+    c = get_colors(theme)
     categories = [d["category"] for d in data]
     budgeted = [d["budget"] for d in data]
     spent = [d["spent"] for d in data]
 
     fig = go.Figure()
-    fig.add_trace(go.Bar(name="Budget", x=categories, y=budgeted, marker_color="#007bff"))
+    fig.add_trace(go.Bar(name="Budget", x=categories, y=budgeted, marker_color=c["blue"]))
     fig.add_trace(go.Bar(name="Actual", x=categories, y=spent, marker_color=[
-        "#dc3545" if d["status"] == "over" else "#ffc107" if d["status"] == "warning" else "#28a745"
+        c["red"] if d["status"] == "over" else c["yellow"] if d["status"] == "warning" else c["green"]
         for d in data
     ]))
-    fig.update_layout(barmode="group", template="plotly_white", margin=dict(t=20, b=60))
+    fig.update_layout(barmode="group", **themed_layout(theme, margin=dict(t=20, b=60)))
 
     # Details table
     rows = []
@@ -90,8 +93,9 @@ def update_budget_chart(_, month, pathname):
     Output("rule-analysis-chart", "figure"),
     Output("rule-analysis-details", "children"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_rule_analysis(pathname):
+def update_rule_analysis(pathname, theme):
     if pathname != "/budgets":
         return go.Figure(), ""
 
@@ -99,22 +103,23 @@ def update_rule_analysis(pathname):
     if "error" in ratio:
         return go.Figure().add_annotation(text=ratio["error"], showarrow=False), ""
 
+    c = get_colors(theme)
     # Actual vs ideal comparison
     fig = go.Figure()
     fig.add_trace(go.Bar(
         name="Actual",
         x=["Needs", "Wants", "Savings"],
         y=[ratio["needs_pct"], ratio["wants_pct"], ratio["savings_pct"]],
-        marker_color=["#17a2b8", "#ffc107", "#28a745"],
+        marker_color=[c["cyan"], c["yellow"], c["green"]],
     ))
     fig.add_trace(go.Bar(
         name="Ideal (50/30/20)",
         x=["Needs", "Wants", "Savings"],
         y=[50, 30, 20],
-        marker_color=["rgba(23,162,184,0.3)", "rgba(255,193,7,0.3)", "rgba(40,167,69,0.3)"],
+        marker_color=[c["cyan_subtle"], c["yellow_subtle"], c["green_bar"]],
     ))
-    fig.update_layout(barmode="group", template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title="% of Income")
+    fig.update_layout(barmode="group", yaxis_title="% of Income",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
 
     sym = _currency()
     details = html.Div([

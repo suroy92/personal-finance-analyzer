@@ -3,6 +3,7 @@ from dash import Input, Output, State, html
 import dash_bootstrap_components as dbc
 
 from ui.app import app
+from ui.theme_utils import get_colors, themed_layout
 from services.suggestion_service import (
     generate_suggestions,
     what_if_calculator,
@@ -117,8 +118,9 @@ def update_subscription_audit(pathname):
 @app.callback(
     Output("discretionary-chart", "figure"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_discretionary_chart(pathname):
+def update_discretionary_chart(pathname, theme):
     if pathname != "/suggestions":
         return go.Figure()
 
@@ -126,16 +128,17 @@ def update_discretionary_chart(pathname):
     if not data:
         return go.Figure().add_annotation(text="No discretionary spending data", showarrow=False)
 
+    c = get_colors(theme)
     categories = [d["category"] for d in data]
     totals = [d["total"] for d in data]
 
     fig = go.Figure(go.Bar(
         x=totals, y=categories, orientation="h",
-        marker_color="#fd7e14",
+        marker_color=c["orange"],
         text=[f"{_currency()}{t:,.0f}" for t in totals],
         textposition="auto",
     ))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, l=120),
-                      xaxis_title=f"Total Spent ({_currency()})",
-                      yaxis=dict(autorange="reversed"))
+    fig.update_layout(xaxis_title=f"Total Spent ({_currency()})",
+                      yaxis=dict(autorange="reversed"),
+                      **themed_layout(theme, margin=dict(t=20, l=120)))
     return fig
