@@ -1,0 +1,459 @@
+/* ═══════════════════════════════════════════
+   LIGHT MODE (default)
+   ═══════════════════════════════════════════ */
+:root {
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F6F8FA;
+    --bg-tertiary: #EAEEF2;
+    --bg-sidebar: #24292F;
+    --bg-sidebar-hover: #32383F;
+    --bg-card: #FFFFFF;
+    --bg-input: #FFFFFF;
+    --bg-table-header: #24292F;
+    --bg-modal: #FFFFFF;
+    --bg-modal-backdrop: rgba(0, 0, 0, 0.5);
+
+    --text-primary: #24292F;
+    --text-secondary: #57606A;
+    --text-muted: #6E7781;
+    --text-sidebar: #FFFFFF;
+    --text-on-dark: #FFFFFF;
+    --text-link: #0969DA;
+
+    --border-primary: #D0D7DE;
+    --border-light: #E1E4E8;
+
+    --blue: #0969DA;
+    --green: #1A7F37;
+    --red: #CF222E;
+    --yellow: #9A6700;
+    --purple: #8250DF;
+    --cyan: #0550AE;
+    --orange: #BC4C00;
+
+    --blue-subtle: #DDF4FF;
+    --green-subtle: #DAFBE1;
+    --red-subtle: #FFEBE9;
+    --yellow-subtle: #FFF8C5;
+    --purple-subtle: #FBEFFF;
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    --progress-bg: #E1E4E8;
+    --scrollbar-thumb: #C1C8CE;
+    --scrollbar-track: #F6F8FA;
+
+    --credit-row: #DAFBE1;
+    --debit-row: #FFEBE9;
+    --uncategorized-row: #FFF8C5;
+
+    --chart-bg: #FFFFFF;
+    --chart-grid: #E1E4E8;
+}
+
+/* ═══════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] {
+    --bg-primary: #0D1117;
+    --bg-secondary: #161B22;
+    --bg-tertiary: #21262D;
+    --bg-sidebar: #010409;
+    --bg-sidebar-hover: #161B22;
+    --bg-card: #161B22;
+    --bg-input: #0D1117;
+    --bg-table-header: #21262D;
+    --bg-modal: #161B22;
+    --bg-modal-backdrop: rgba(0, 0, 0, 0.7);
+
+    --text-primary: #C9D1D9;
+    --text-secondary: #8B949E;
+    --text-muted: #484F58;
+    --text-sidebar: #C9D1D9;
+    --text-on-dark: #C9D1D9;
+    --text-link: #58A6FF;
+
+    --border-primary: #30363D;
+    --border-light: #21262D;
+
+    --blue: #79C0FF;
+    --green: #7EE787;
+    --red: #FF7B72;
+    --yellow: #D29922;
+    --purple: #D2A8FF;
+    --cyan: #A5D6FF;
+    --orange: #E3B341;
+
+    --blue-subtle: rgba(121, 192, 255, 0.1);
+    --green-subtle: rgba(126, 231, 135, 0.1);
+    --red-subtle: rgba(255, 123, 114, 0.1);
+    --yellow-subtle: rgba(210, 153, 34, 0.1);
+    --purple-subtle: rgba(210, 168, 255, 0.1);
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    --progress-bg: #21262D;
+    --scrollbar-thumb: #484F58;
+    --scrollbar-track: #0D1117;
+
+    --credit-row: rgba(126, 231, 135, 0.08);
+    --debit-row: rgba(255, 123, 114, 0.08);
+    --uncategorized-row: rgba(210, 153, 34, 0.1);
+
+    --chart-bg: #0D1117;
+    --chart-grid: #21262D;
+}
+
+/* ═══════════════════════════════════════════
+   BASE ELEMENTS
+   ═══════════════════════════════════════════ */
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════ */
+#pfa-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16rem;
+    padding: 1.5rem 1rem;
+    background-color: var(--bg-sidebar) !important;
+    color: var(--text-sidebar) !important;
+    overflow-y: auto;
+    z-index: 100;
+    border-right: 1px solid var(--border-primary);
+    transition: background-color 0.25s ease;
+}
+
+#pfa-sidebar hr {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+#pfa-sidebar .nav-link {
+    color: var(--text-sidebar) !important;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    padding: 0.5rem 0.75rem;
+    transition: background-color 0.15s ease;
+}
+
+#pfa-sidebar .nav-link:hover {
+    background-color: var(--bg-sidebar-hover) !important;
+}
+
+#pfa-sidebar .nav-link.active {
+    background-color: var(--blue) !important;
+    color: #FFFFFF !important;
+}
+
+/* ═══════════════════════════════════════════
+   THEME TOGGLE
+   ═══════════════════════════════════════════ */
+#theme-toggle-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-sidebar);
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    font-size: 0.85rem;
+}
+
+#theme-toggle-btn:hover {
+    background-color: var(--bg-sidebar-hover);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT AREA
+   ═══════════════════════════════════════════ */
+#page-content {
+    margin-left: 18rem;
+    margin-right: 2rem;
+    padding: 2rem 1rem;
+}
+
+#festival-alert-banner {
+    margin-left: 18rem;
+    margin-right: 2rem;
+    padding: 1rem 1rem 0;
+}
+
+/* ═══════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════ */
+.card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-primary) !important;
+    box-shadow: var(--shadow);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.card-header {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.card-body {
+    color: var(--text-primary) !important;
+}
+
+/* ═══════════════════════════════════════════
+   TABLES (DataTable)
+   ═══════════════════════════════════════════ */
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner th {
+    background-color: var(--bg-table-header) !important;
+    color: var(--text-on-dark) !important;
+    border-color: var(--border-primary) !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner td {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-light) !important;
+}
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner tr:hover td {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Row colors — override DataTable conditionals */
+.dash-table-container .row-credit td {
+    background-color: var(--credit-row) !important;
+}
+
+.dash-table-container .row-debit td {
+    background-color: var(--debit-row) !important;
+}
+
+.dash-table-container .row-uncategorized td {
+    background-color: var(--uncategorized-row) !important;
+}
+
+/* Filter inputs inside DataTable */
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner input {
+    background-color: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+/* Previous/Next pagination */
+.dash-table-container .previous-next-container button {
+    color: var(--text-primary) !important;
+}
+
+/* ═══════════════════════════════════════════
+   FORMS & INPUTS
+   ═══════════════════════════════════════════ */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="number"],
+input[type="month"],
+select {
+    background-color: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--blue) !important;
+    box-shadow: 0 0 0 0.2rem rgba(88, 166, 255, 0.25) !important;
+}
+
+.input-group-text {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+/* ═══════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════ */
+.modal-content {
+    background-color: var(--bg-modal) !important;
+    border-color: var(--border-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-header {
+    border-bottom-color: var(--border-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-footer {
+    border-top-color: var(--border-primary) !important;
+}
+
+.modal-header .btn-close {
+    filter: var(--btn-close-filter, none);
+}
+
+[data-theme="dark"] .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ═══════════════════════════════════════════
+   ALERTS
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .alert-success {
+    background-color: var(--green-subtle) !important;
+    color: var(--green) !important;
+    border-color: rgba(126, 231, 135, 0.2) !important;
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: var(--red-subtle) !important;
+    color: var(--red) !important;
+    border-color: rgba(255, 123, 114, 0.2) !important;
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: var(--yellow-subtle) !important;
+    color: var(--yellow) !important;
+    border-color: rgba(210, 153, 34, 0.2) !important;
+}
+
+[data-theme="dark"] .alert-info {
+    background-color: var(--blue-subtle) !important;
+    color: var(--blue) !important;
+    border-color: rgba(121, 192, 255, 0.2) !important;
+}
+
+/* ═══════════════════════════════════════════
+   BADGES
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .badge.bg-secondary {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS BARS
+   ═══════════════════════════════════════════ */
+.progress {
+    background-color: var(--progress-bg) !important;
+}
+
+/* ═══════════════════════════════════════════
+   BOOTSTRAP TABLE (non-DataTable)
+   ═══════════════════════════════════════════ */
+.table {
+    color: var(--text-primary) !important;
+    border-color: var(--border-primary) !important;
+}
+
+.table th,
+.table td {
+    border-color: var(--border-light) !important;
+}
+
+.table-bordered {
+    border-color: var(--border-primary) !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    --bs-table-striped-bg: var(--bg-secondary);
+}
+
+/* ═══════════════════════════════════════════
+   TEXT HELPERS
+   ═══════════════════════════════════════════ */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+p, h1, h2, h3, h4, h5, h6, label, span, small, strong {
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--text-link);
+}
+
+a:hover {
+    color: var(--blue);
+}
+
+hr {
+    border-color: var(--border-primary);
+}
+
+/* ═══════════════════════════════════════════
+   PLOTLY CHARTS — transparent background
+   ═══════════════════════════════════════════ */
+.js-plotly-plot .plotly .main-svg {
+    background: transparent !important;
+}
+
+/* ═══════════════════════════════════════════
+   UPLOAD COMPONENT
+   ═══════════════════════════════════════════ */
+#csv-upload {
+    border-color: var(--border-primary) !important;
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.25s ease;
+}
+
+#csv-upload:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   SUMMARY CARDS — icon colors
+   ═══════════════════════════════════════════ */
+.summary-card-income .fa-arrow-down { color: var(--green) !important; }
+.summary-card-expense .fa-arrow-up { color: var(--red) !important; }
+.summary-card-savings .fa-piggy-bank { color: var(--blue) !important; }
+.summary-card-net .fa-balance-scale { color: var(--purple) !important; }
+
+/* ═══════════════════════════════════════════
+   NAV PILLS active override
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .nav-pills .nav-link.active {
+    background-color: var(--blue) !important;
+}

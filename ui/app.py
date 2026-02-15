@@ -1,8 +1,6 @@
 import dash
-from dash import html, dcc
+from dash import html, dcc, ClientsideFunction, Input, Output, State
 import dash_bootstrap_components as dbc
-
-from core.config import get_config
 
 app = dash.Dash(
     __name__,
@@ -12,95 +10,95 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
 )
 
-SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem",
-    "backgroundColor": "#2c3e50",
-    "color": "white",
-    "overflowY": "auto",
-}
-
-CONTENT_STYLE = {
-    "marginLeft": "18rem",
-    "marginRight": "2rem",
-    "padding": "2rem 1rem",
-}
-
 sidebar = html.Div(
     [
-        html.H4("Finance Analyzer", className="text-white mb-4"),
-        html.Hr(style={"borderColor": "rgba(255,255,255,0.2)"}),
+        html.H4("Finance Analyzer", className="mb-3"),
+        html.Hr(),
+
         dbc.Nav(
             [
                 dbc.NavLink(
                     [html.I(className="fas fa-tachometer-alt me-2"), "Dashboard"],
-                    href="/",
-                    active="exact",
-                    className="text-white",
+                    href="/", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-exchange-alt me-2"), "Transactions"],
-                    href="/transactions",
-                    active="exact",
-                    className="text-white",
+                    href="/transactions", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-chart-line me-2"), "Analytics"],
-                    href="/analytics",
-                    active="exact",
-                    className="text-white",
+                    href="/analytics", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-wallet me-2"), "Budgets"],
-                    href="/budgets",
-                    active="exact",
-                    className="text-white",
+                    href="/budgets", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-lightbulb me-2"), "Suggestions"],
-                    href="/suggestions",
-                    active="exact",
-                    className="text-white",
+                    href="/suggestions", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-bell me-2"), "Festival Alerts"],
-                    href="/festivals",
-                    active="exact",
-                    className="text-white",
+                    href="/festivals", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-upload me-2"), "Import Data"],
-                    href="/import",
-                    active="exact",
-                    className="text-white",
+                    href="/import", active="exact",
                 ),
                 dbc.NavLink(
                     [html.I(className="fas fa-cog me-2"), "Settings"],
-                    href="/settings",
-                    active="exact",
-                    className="text-white",
+                    href="/settings", active="exact",
                 ),
             ],
             vertical=True,
             pills=True,
         ),
+
+        # Theme toggle at bottom of sidebar
+        html.Div([
+            html.Hr(),
+            html.Button(
+                "Dark Mode",
+                id="theme-toggle-btn",
+            ),
+        ], style={"position": "absolute", "bottom": "1rem", "left": "1rem", "right": "1rem"}),
     ],
-    style=SIDEBAR_STYLE,
+    id="pfa-sidebar",
 )
 
-content = html.Div(id="page-content", style=CONTENT_STYLE)
-
-# Alert banner for festival notifications
-alert_banner = html.Div(id="festival-alert-banner", style=CONTENT_STYLE)
+content = html.Div(id="page-content")
+alert_banner = html.Div(id="festival-alert-banner")
 
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
-    dcc.Interval(id="festival-check-interval", interval=3600 * 1000, n_intervals=0),  # hourly
+    dcc.Store(id="theme-store", data="light", storage_type="local"),
+    dcc.Interval(id="festival-check-interval", interval=3600 * 1000, n_intervals=0),
     sidebar,
     alert_banner,
     content,
 ])
+
+# ── Clientside callbacks for theme toggling ──
+
+# Restore theme from localStorage on page load
+app.clientside_callback(
+    ClientsideFunction(namespace="theme", function_name="initTheme"),
+    Output("theme-store", "data"),
+    Input("url", "pathname"),
+)
+
+# Toggle theme on button click (reads current theme via State, not Input)
+app.clientside_callback(
+    ClientsideFunction(namespace="theme", function_name="toggle"),
+    Output("theme-store", "data", allow_duplicate=True),
+    Input("theme-toggle-btn", "n_clicks"),
+    State("theme-store", "data"),
+    prevent_initial_call=True,
+)
+
+# Update button label when theme changes
+app.clientside_callback(
+    ClientsideFunction(namespace="theme", function_name="updateButtonLabel"),
+    Output("theme-toggle-btn", "children"),
+    Input("theme-store", "data"),
+)

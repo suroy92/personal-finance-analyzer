@@ -70,14 +70,14 @@ def layout():
             row_selectable="single",
             style_table={"overflowX": "auto"},
             style_cell={"textAlign": "left", "padding": "10px", "fontSize": "0.9rem"},
-            style_header={"backgroundColor": "#2c3e50", "color": "white", "fontWeight": "bold"},
+            style_header={"fontWeight": "bold"},
             style_data_conditional=[
                 {"if": {"filter_query": "{transaction_type} = Credit"},
-                 "backgroundColor": "#d4edda"},
+                 "className": "row-credit"},
                 {"if": {"filter_query": "{transaction_type} = Debit"},
-                 "backgroundColor": "#f8d7da"},
+                 "className": "row-debit"},
                 {"if": {"filter_query": "{category} is nil"},
-                 "backgroundColor": "#fff3cd"},
+                 "className": "row-uncategorized"},
             ],
         ),
 

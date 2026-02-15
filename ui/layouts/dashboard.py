@@ -2,12 +2,13 @@ from dash import html, dcc
 import dash_bootstrap_components as dbc
 
 
-def summary_card(title, value, icon, color):
+def summary_card(title, value, icon, css_class):
+    """Create a summary card. css_class should be like 'summary-card-income'."""
     return dbc.Card(
         dbc.CardBody([
             html.Div([
                 html.Div([
-                    html.I(className=f"fas {icon} fa-2x", style={"color": color}),
+                    html.I(className=f"fas {icon} fa-2x"),
                 ], className="me-3"),
                 html.Div([
                     html.P(title, className="text-muted mb-1", style={"fontSize": "0.85rem"}),
@@ -15,7 +16,7 @@ def summary_card(title, value, icon, color):
                 ]),
             ], className="d-flex align-items-center"),
         ]),
-        className="shadow-sm mb-3",
+        className=f"shadow-sm mb-3 {css_class}",
     )
 
 

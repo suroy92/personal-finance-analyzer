@@ -3,6 +3,7 @@ from dash import Input, Output, State, html
 import dash_bootstrap_components as dbc
 
 from ui.app import app
+from ui.theme_utils import get_colors, themed_layout
 from services.festival_service import (
     get_upcoming_festivals,
     get_festive_spending_analysis,
@@ -73,8 +74,9 @@ def update_upcoming_festivals(pathname, _):
     Output("festive-comparison-chart", "figure"),
     Output("festive-stats-body", "children"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_festive_comparison(pathname):
+def update_festive_comparison(pathname, theme):
     if pathname != "/festivals":
         return go.Figure(), ""
 
@@ -85,16 +87,17 @@ def update_festive_comparison(pathname):
         return go.Figure().add_annotation(text="Not enough data yet", showarrow=False), \
                html.P("Upload more months of data to see festive vs normal spending analysis.", className="text-muted")
 
+    c = get_colors(theme)
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=["Festive Months", "Normal Months"],
         y=[analysis["festive_months_avg"], analysis["normal_months_avg"]],
-        marker_color=["#dc3545", "#28a745"],
+        marker_color=[c["red"], c["green"]],
         text=[f"{sym}{analysis['festive_months_avg']:,.0f}", f"{sym}{analysis['normal_months_avg']:,.0f}"],
         textposition="auto",
     ))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title=f"Average Monthly Spending ({sym})")
+    fig.update_layout(yaxis_title=f"Average Monthly Spending ({sym})",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
 
     stats = html.Div([
         html.H5("Festive Season Impact", className="mb-3"),

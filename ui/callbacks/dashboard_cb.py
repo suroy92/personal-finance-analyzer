@@ -6,6 +6,7 @@ import pandas as pd
 
 from ui.app import app
 from ui.layouts.dashboard import summary_card
+from ui.theme_utils import get_colors, themed_layout
 from services.transaction_service import get_summary, get_monthly_breakdown, get_category_breakdown, get_daily_spending
 from services.analytics import get_monthly_trends, forecast_next_month
 from services.budget_service import get_budget_vs_actual
@@ -26,74 +27,80 @@ def update_summary_cards(_):
     net = s["total_income"] - s["total_expenses"]
 
     return [
-        dbc.Col(summary_card("Total Income", f"{sym}{s['total_income']:,.0f}", "fa-arrow-down", "#28a745"), md=3),
-        dbc.Col(summary_card("Total Expenses", f"{sym}{s['total_expenses']:,.0f}", "fa-arrow-up", "#dc3545"), md=3),
-        dbc.Col(summary_card("Savings & Investments", f"{sym}{s['total_savings']:,.0f}", "fa-piggy-bank", "#007bff"), md=3),
-        dbc.Col(summary_card("Net Position", f"{sym}{net:,.0f}", "fa-balance-scale", "#6f42c1"), md=3),
+        dbc.Col(summary_card("Total Income", f"{sym}{s['total_income']:,.0f}", "fa-arrow-down", "summary-card-income"), md=3),
+        dbc.Col(summary_card("Total Expenses", f"{sym}{s['total_expenses']:,.0f}", "fa-arrow-up", "summary-card-expense"), md=3),
+        dbc.Col(summary_card("Savings & Investments", f"{sym}{s['total_savings']:,.0f}", "fa-piggy-bank", "summary-card-savings"), md=3),
+        dbc.Col(summary_card("Net Position", f"{sym}{net:,.0f}", "fa-balance-scale", "summary-card-net"), md=3),
     ]
 
 
 @app.callback(
     Output("monthly-trend-chart", "figure"),
     Input("dashboard-refresh", "n_intervals"),
+    Input("theme-store", "data"),
 )
-def update_monthly_trend(_):
+def update_monthly_trend(_, theme):
     data = get_monthly_breakdown()
     if not data:
         return go.Figure().add_annotation(text="No data available", showarrow=False)
 
+    c = get_colors(theme)
     df = pd.DataFrame(data)
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=df["month"], y=df["income"], name="Income", marker_color="#28a745"))
-    fig.add_trace(go.Bar(x=df["month"], y=df["expenses"], name="Expenses", marker_color="#dc3545"))
-    fig.add_trace(go.Bar(x=df["month"], y=df["savings"], name="Savings", marker_color="#007bff"))
-    fig.update_layout(barmode="group", template="plotly_white", margin=dict(t=20, b=40),
-                      legend=dict(orientation="h", yanchor="bottom", y=1.02))
+    fig.add_trace(go.Bar(x=df["month"], y=df["income"], name="Income", marker_color=c["green"]))
+    fig.add_trace(go.Bar(x=df["month"], y=df["expenses"], name="Expenses", marker_color=c["red"]))
+    fig.add_trace(go.Bar(x=df["month"], y=df["savings"], name="Savings", marker_color=c["blue"]))
+    fig.update_layout(barmode="group", legend=dict(orientation="h", yanchor="bottom", y=1.02),
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
 
 
 @app.callback(
     Output("expense-pie-chart", "figure"),
     Input("dashboard-refresh", "n_intervals"),
+    Input("theme-store", "data"),
 )
-def update_expense_pie(_):
+def update_expense_pie(_, theme):
     data = get_category_breakdown("Debit")
     if not data:
         return go.Figure().add_annotation(text="No data", showarrow=False)
 
     df = pd.DataFrame(data)
     fig = px.pie(df, values="total", names="category", hole=0.4)
-    fig.update_layout(margin=dict(t=20, b=20), showlegend=True)
+    fig.update_layout(showlegend=True, **themed_layout(theme, margin=dict(t=20, b=20)))
     return fig
 
 
 @app.callback(
     Output("savings-rate-chart", "figure"),
     Input("dashboard-refresh", "n_intervals"),
+    Input("theme-store", "data"),
 )
-def update_savings_rate(_):
+def update_savings_rate(_, theme):
     data = get_monthly_trends()
     if not data:
         return go.Figure().add_annotation(text="No data", showarrow=False)
 
+    c = get_colors(theme)
     df = pd.DataFrame(data)
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=df["month"], y=df["savings_rate"], mode="lines+markers",
-        name="Savings Rate %", line=dict(color="#007bff", width=3),
+        name="Savings Rate %", line=dict(color=c["blue"], width=3),
     ))
-    fig.add_hline(y=20, line_dash="dash", line_color="green",
+    fig.add_hline(y=20, line_dash="dash", line_color=c["green"],
                   annotation_text="20% target")
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title="Savings Rate (%)")
+    fig.update_layout(yaxis_title="Savings Rate (%)",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
 
 
 @app.callback(
     Output("spending-heatmap", "figure"),
     Input("dashboard-refresh", "n_intervals"),
+    Input("theme-store", "data"),
 )
-def update_heatmap(_):
+def update_heatmap(_, theme):
     data = get_daily_spending(months_back=6)
     if not data:
         return go.Figure().add_annotation(text="No data", showarrow=False)
@@ -111,8 +118,8 @@ def update_heatmap(_):
         z=pivot.values, x=[str(w) for w in pivot.columns], y=pivot.index,
         colorscale="RdYlGn_r", hovertemplate="Week %{x}<br>%{y}<br>Spent: %{z:,.0f}<extra></extra>",
     ))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      xaxis_title="Week Number", yaxis_title="")
+    fig.update_layout(xaxis_title="Week Number", yaxis_title="",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
 
 

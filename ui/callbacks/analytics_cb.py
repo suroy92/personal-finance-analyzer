@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 
 from ui.app import app
+from ui.theme_utils import get_colors, themed_layout
 from services.analytics import (
     get_monthly_trends,
     detect_anomalies,
@@ -23,8 +24,9 @@ def _currency():
 @app.callback(
     Output("moving-avg-chart", "figure"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_moving_avg(pathname):
+def update_moving_avg(pathname, theme):
     if pathname != "/analytics":
         return go.Figure()
 
@@ -32,16 +34,17 @@ def update_moving_avg(pathname):
     if not data:
         return go.Figure().add_annotation(text="No data available", showarrow=False)
 
+    c = get_colors(theme)
     df = pd.DataFrame(data)
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=df["month"], y=df["expenses"], name="Expenses", marker_color="rgba(220,53,69,0.5)"))
+    fig.add_trace(go.Bar(x=df["month"], y=df["expenses"], name="Expenses", marker_color=c["red_subtle"]))
     fig.add_trace(go.Scatter(x=df["month"], y=df["expense_ma3"], mode="lines", name="3-Month MA",
-                             line=dict(color="#fd7e14", width=3)))
+                             line=dict(color=c["orange"], width=3)))
     fig.add_trace(go.Scatter(x=df["month"], y=df["expense_ma6"], mode="lines", name="6-Month MA",
-                             line=dict(color="#6f42c1", width=3, dash="dash")))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title=f"Amount ({_currency()})",
-                      legend=dict(orientation="h", yanchor="bottom", y=1.02))
+                             line=dict(color=c["purple"], width=3, dash="dash")))
+    fig.update_layout(yaxis_title=f"Amount ({_currency()})",
+                      legend=dict(orientation="h", yanchor="bottom", y=1.02),
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
 
 
@@ -81,8 +84,9 @@ def update_anomalies(pathname):
 @app.callback(
     Output("growth-rates-chart", "figure"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_growth_rates(pathname):
+def update_growth_rates(pathname, theme):
     if pathname != "/analytics":
         return go.Figure()
 
@@ -90,19 +94,21 @@ def update_growth_rates(pathname):
     if not data:
         return go.Figure().add_annotation(text="Need more data", showarrow=False)
 
+    c = get_colors(theme)
     df = pd.DataFrame(data[:10])
-    colors = ["#dc3545" if g > 0 else "#28a745" for g in df["growth_pct"]]
+    colors = [c["red"] if g > 0 else c["green"] for g in df["growth_pct"]]
     fig = go.Figure(go.Bar(x=df["growth_pct"], y=df["category"], orientation="h", marker_color=colors))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, l=120),
-                      xaxis_title="Growth %", yaxis=dict(autorange="reversed"))
+    fig.update_layout(xaxis_title="Growth %", yaxis=dict(autorange="reversed"),
+                      **themed_layout(theme, margin=dict(t=20, l=120)))
     return fig
 
 
 @app.callback(
     Output("seasonal-chart", "figure"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_seasonal(pathname):
+def update_seasonal(pathname, theme):
     if pathname != "/analytics":
         return go.Figure()
 
@@ -110,22 +116,24 @@ def update_seasonal(pathname):
     if not data:
         return go.Figure().add_annotation(text="No data", showarrow=False)
 
+    c = get_colors(theme)
     df = pd.DataFrame(data)
-    colors = ["#dc3545" if v > 0 else "#28a745" for v in df["vs_average_pct"]]
+    colors = [c["red"] if v > 0 else c["green"] for v in df["vs_average_pct"]]
     fig = go.Figure(go.Bar(
         x=df["month_name"], y=df["vs_average_pct"], marker_color=colors,
         text=[f"{v:+.1f}%" for v in df["vs_average_pct"]], textposition="auto",
     ))
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title="vs Average (%)")
+    fig.update_layout(yaxis_title="vs Average (%)",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
 
 
 @app.callback(
     Output("category-time-chart", "figure"),
     Input("url", "pathname"),
+    Input("theme-store", "data"),
 )
-def update_category_time(pathname):
+def update_category_time(pathname, theme):
     if pathname != "/analytics":
         return go.Figure()
 
@@ -142,6 +150,6 @@ def update_category_time(pathname):
 
     df = pd.DataFrame([dict(r) for r in rows])
     fig = px.area(df, x="month", y="total", color="category")
-    fig.update_layout(template="plotly_white", margin=dict(t=20, b=40),
-                      yaxis_title=f"Amount ({_currency()})")
+    fig.update_layout(yaxis_title=f"Amount ({_currency()})",
+                      **themed_layout(theme, margin=dict(t=20, b=40)))
     return fig
