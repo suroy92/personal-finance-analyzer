@@ -204,9 +204,18 @@ def update_transaction_category(txn_hash: str, category: str, is_saving: int = 0
 
 def get_all_transactions(limit=500, offset=0):
     rows = execute_query(
-        """SELECT id, date, description, amount, transaction_type, category, is_saving, uploaded_at
+        """SELECT id, date, description, amount, transaction_type, category, is_saving, uploaded_at, hash
            FROM daily_transactions ORDER BY date DESC LIMIT ? OFFSET ?""",
         (limit, offset),
+        fetch=True,
+    )
+    return [dict(r) for r in rows] if rows else []
+
+
+def get_uncategorized_transactions():
+    rows = execute_query(
+        """SELECT id, date, description, amount, transaction_type, is_saving, hash
+           FROM daily_transactions WHERE category IS NULL ORDER BY date DESC""",
         fetch=True,
     )
     return [dict(r) for r in rows] if rows else []

@@ -8,6 +8,7 @@ from services.transaction_service import (
     get_summary,
     get_monthly_breakdown,
     get_category_breakdown,
+    get_uncategorized_transactions,
     update_transaction_category,
 )
 
@@ -136,3 +137,47 @@ def test_get_category_breakdown(test_db):
     categories = {b["category"] for b in breakdown}
     assert "Food & Dining" in categories
     assert "Shopping" in categories
+
+
+def test_uncategorized_transactions(test_db):
+    csv_content = b"""Date,Narration,Debit Amount,Credit Amount
+2024-01-15,ZOMATO ORDER,500,0
+2024-01-18,RANDOM UNKNOWN MERCHANT,1000,0
+"""
+    ingest_csv(csv_content, "test.csv")
+
+    uncategorized = get_uncategorized_transactions()
+    # RANDOM UNKNOWN MERCHANT should be uncategorized (no keyword match, no ML)
+    assert any("RANDOM UNKNOWN MERCHANT" in t["description"] for t in uncategorized)
+
+
+def test_update_transaction_category(test_db):
+    csv_content = b"""Date,Narration,Debit Amount,Credit Amount
+2024-01-18,RANDOM UNKNOWN MERCHANT,1000,0
+"""
+    ingest_csv(csv_content, "test.csv")
+
+    uncategorized = get_uncategorized_transactions()
+    assert len(uncategorized) >= 1
+    txn = uncategorized[0]
+
+    # Manually correct the category
+    update_transaction_category(txn["hash"], "Shopping", is_saving=0)
+
+    # Should no longer be uncategorized
+    uncategorized_after = get_uncategorized_transactions()
+    assert not any(t["hash"] == txn["hash"] for t in uncategorized_after)
+
+    # Should appear with the correct category
+    from services.transaction_service import get_all_transactions
+    all_txns = get_all_transactions()
+    corrected = [t for t in all_txns if t["hash"] == txn["hash"]]
+    assert len(corrected) == 1
+    assert corrected[0]["category"] == "Shopping"
+
+    # Should have added training data
+    from core.database import execute_query
+    training = execute_query(
+        "SELECT * FROM training_data WHERE category = 'Shopping'", fetch=True
+    )
+    assert len(training) >= 1

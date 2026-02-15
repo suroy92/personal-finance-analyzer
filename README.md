@@ -62,7 +62,7 @@ tests/                      # 47 tests across 7 modules
 ### Install
 
 ```bash
-git clone https://github.com/<your-username>/personal-finance-analyzer.git
+git clone https://github.com/suroy92/personal-finance-analyzer.git
 cd personal-finance-analyzer
 python -m venv .venv
 # Windows: .venv\Scripts\activate
